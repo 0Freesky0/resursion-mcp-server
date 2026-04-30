@@ -1,10 +1,10 @@
 {
-  "name": "idfactory-resolver-mcp",
+  "name": "resursion-mcp-server",
   "version": "0.1.0",
   "description": "Local stdio MCP server for resolving ID Factory handle records.",
   "type": "module",
   "bin": {
-    "idfactory-resolver-mcp": "./dist/index.js"
+    "resursion-mcp-server": "./dist/index.js"
   },
   "files": [
     "dist",

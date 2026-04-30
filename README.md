@@ -1,4 +1,4 @@
-# idfactory-resolver-mcp
+# resursion-mcp-server
 
 这是一个本地 stdio MCP server，用于通过下面的接口解析 ID Factory handle 记录：
 
@@ -54,7 +54,7 @@ node dist/index.js
 ```json
 {
   "mcpServers": {
-    "idfactory-resolver-mcp": {
+    "resursion-mcp-server": {
       "command": "node",
       "args": [
         "/Users/wsc-laptop/teleinfo-project/recursion-mcp/dist/index.js"
@@ -69,7 +69,7 @@ node dist/index.js
 ```json
 {
   "mcpServers": {
-    "idfactory-resolver-mcp": {
+    "resursion-mcp-server": {
       "command": "npm",
       "args": ["run", "dev"]
     }
@@ -84,7 +84,7 @@ node dist/index.js
 如果代码已经发布到 GitHub，可以直接使用 GitHub 仓库作为 npx 包来源：
 
 ```bash
-npx -y github:<OWNER>/idfactory-resolver-mcp
+npx -y github:<OWNER>/resursion-mcp-server
 ```
 
 对应的 MCP 客户端配置可以写成：
@@ -92,21 +92,21 @@ npx -y github:<OWNER>/idfactory-resolver-mcp
 ```json
 {
   "mcpServers": {
-    "idfactory-resolver-mcp": {
+    "resursion-mcp-server": {
       "command": "npx",
       "args": [
         "-y",
-        "github:<OWNER>/idfactory-resolver-mcp"
+        "github:<OWNER>/resursion-mcp-server"
       ]
     }
   }
 }
 ```
 
-如果后续发布到 npm，并且包名仍为 `idfactory-resolver-mcp`，则可以直接使用：
+如果后续发布到 npm，并且包名仍为 `resursion-mcp-server`，则可以直接使用：
 
 ```bash
-npx -y idfactory-resolver-mcp
+npx -y resursion-mcp-server
 ```
 
 对应的 MCP 客户端配置：
@@ -114,15 +114,15 @@ npx -y idfactory-resolver-mcp
 ```json
 {
   "mcpServers": {
-    "idfactory-resolver-mcp": {
+    "resursion-mcp-server": {
       "command": "npx",
       "args": [
         "-y",
-        "idfactory-resolver-mcp"
+        "resursion-mcp-server"
       ]
     }
   }
 }
 ```
 
-当前检查结果：`recursion-mcp` 这个 npm 包名已经被占用，`idfactory-resolver-mcp` 目前未发布，更适合作为后续 npm 包名和 npx 命令名。
+当前包名和 npx 命令名统一为 `resursion-mcp-server`。

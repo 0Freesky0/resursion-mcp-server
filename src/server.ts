@@ -4,7 +4,7 @@ import { resolveHandle } from "./handleResolver.js";
 
 export function createServer(): McpServer {
   const server = new McpServer({
-    name: "recursion-mcp",
+    name: "resursion-mcp-server",
     version: "0.1.0"
   });
 
