@@ -1,0 +1,912 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#08171f" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2308171f'/%3E%3Cpath d='M14 39 28 14h22L36 39H14Zm0 11h36' fill='none' stroke='%23a7f3d0' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+  <title>{{title}}</title>
+  <style>
+    :root {
+      --bg: #08171f;
+      --bg-2: #0c2426;
+      --ink: #f5f7ec;
+      --muted: #9fb3ad;
+      --panel: rgba(242, 246, 235, 0.96);
+      --panel-2: rgba(230, 238, 226, 0.9);
+      --panel-ink: #111c1a;
+      --line: rgba(245, 247, 236, 0.14);
+      --line-dark: rgba(17, 28, 26, 0.12);
+      --mint: #a7f3d0;
+      --cyan: #7dd3fc;
+      --gold: #f7d879;
+      --rose: #ff9b8f;
+      --ok: #1f8a5f;
+      --shadow: 0 26px 88px rgba(0, 0, 0, 0.35);
+    }
+
+    * { box-sizing: border-box; }
+
+    html { background: var(--bg); }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        linear-gradient(120deg, rgba(167, 243, 208, 0.16), transparent 34rem),
+        linear-gradient(250deg, rgba(125, 211, 252, 0.12), transparent 30rem),
+        radial-gradient(circle at 48% -12rem, rgba(247, 216, 121, 0.16), transparent 34rem),
+        repeating-linear-gradient(90deg, rgba(245, 247, 236, 0.035) 0 1px, transparent 1px 92px),
+        linear-gradient(180deg, #0b2426, #071217 74%, #05090c);
+      font-family: "Avenir Next", "Gill Sans", "Noto Sans SC", ui-sans-serif, system-ui, sans-serif;
+      letter-spacing: 0;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(245, 247, 236, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(245, 247, 236, 0.035) 1px, transparent 1px);
+      background-size: 24px 24px;
+      mask-image: linear-gradient(to bottom, black, transparent 72%);
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .app {
+      width: min(1220px, calc(100% - 34px));
+      margin: 0 auto;
+      padding: 34px 0 70px;
+    }
+
+    .shell {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 340px;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .hero,
+    .status,
+    .toolbar,
+    .surface,
+    .side-card {
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .hero {
+      position: relative;
+      min-height: 368px;
+      overflow: hidden;
+      padding: clamp(28px, 5vw, 54px);
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.02)),
+        linear-gradient(180deg, rgba(12, 36, 38, 0.86), rgba(8, 23, 31, 0.94));
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 18px;
+      border: 1px solid rgba(167, 243, 208, 0.16);
+      pointer-events: none;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: clamp(28px, 6vw, 78px);
+      bottom: clamp(28px, 6vw, 70px);
+      width: min(32vw, 270px);
+      aspect-ratio: 1;
+      border: 1px solid rgba(167, 243, 208, 0.22);
+      background:
+        linear-gradient(45deg, transparent 49.2%, rgba(167, 243, 208, 0.62) 49.7%, rgba(167, 243, 208, 0.62) 50.3%, transparent 50.8%),
+        linear-gradient(-45deg, transparent 49.2%, rgba(125, 211, 252, 0.36) 49.7%, rgba(125, 211, 252, 0.36) 50.3%, transparent 50.8%),
+        radial-gradient(circle at center, rgba(167, 243, 208, 0.12), transparent 62%);
+      opacity: 0.76;
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      position: relative;
+      z-index: 1;
+      width: fit-content;
+      margin: 0 0 30px;
+      padding: 9px 12px;
+      border: 1px solid rgba(167, 243, 208, 0.28);
+      background: rgba(167, 243, 208, 0.08);
+      color: var(--mint);
+      font-size: 12px;
+      font-weight: 900;
+      line-height: 1;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      position: relative;
+      z-index: 1;
+      margin: 0;
+      max-width: 780px;
+      font-family: ui-serif, Georgia, "Times New Roman", "Noto Serif SC", serif;
+      font-size: clamp(48px, 8vw, 110px);
+      line-height: 0.88;
+      font-weight: 950;
+      letter-spacing: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .hero-copy {
+      position: relative;
+      z-index: 1;
+      margin: 26px 0 0;
+      max-width: 650px;
+      color: #d9e6dd;
+      font-size: 18px;
+      line-height: 1.8;
+    }
+
+    .signal-strip {
+      position: absolute;
+      left: clamp(28px, 5vw, 54px);
+      right: clamp(28px, 5vw, 54px);
+      bottom: 28px;
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 7px;
+      z-index: 1;
+    }
+
+    .signal-strip i {
+      display: block;
+      height: 5px;
+      background: linear-gradient(90deg, var(--mint), var(--cyan));
+      opacity: calc(0.22 + var(--level) * 0.075);
+    }
+
+    .status {
+      display: grid;
+      align-content: stretch;
+      gap: 1px;
+      background: var(--panel);
+      color: var(--panel-ink);
+    }
+
+    .status-pill {
+      margin: 22px 22px 8px;
+      width: fit-content;
+      padding: 8px 11px;
+      border: 1px solid rgba(31, 138, 95, 0.24);
+      background: #def8e9;
+      color: #17633f;
+      font-size: 12px;
+      font-weight: 950;
+      line-height: 1;
+    }
+
+    .metric {
+      display: grid;
+      gap: 8px;
+      padding: 22px;
+      border-top: 1px solid var(--line-dark);
+    }
+
+    .metric span {
+      color: #64736d;
+      font-size: 11px;
+      font-weight: 950;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .metric strong {
+      color: #101b18;
+      font-size: clamp(28px, 3vw, 38px);
+      line-height: 1;
+      font-weight: 950;
+      overflow-wrap: anywhere;
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: minmax(240px, 1fr) auto;
+      gap: 14px;
+      padding: 14px;
+      margin-bottom: 16px;
+      background: rgba(245, 247, 236, 0.08);
+    }
+
+    .search {
+      position: relative;
+    }
+
+    .search input {
+      width: 100%;
+      min-height: 46px;
+      border: 1px solid rgba(245, 247, 236, 0.18);
+      background: rgba(5, 13, 16, 0.62);
+      color: var(--ink);
+      padding: 0 15px;
+      outline: none;
+    }
+
+    .search input:focus {
+      border-color: rgba(167, 243, 208, 0.58);
+      box-shadow: 0 0 0 3px rgba(167, 243, 208, 0.1);
+    }
+
+    .tabs,
+    .type-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .tab,
+    .filter,
+    .action {
+      min-height: 38px;
+      border: 1px solid rgba(245, 247, 236, 0.18);
+      background: rgba(245, 247, 236, 0.06);
+      color: #dce7df;
+      padding: 0 12px;
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    .tab[aria-selected="true"],
+    .filter.active,
+    .action:hover {
+      border-color: rgba(167, 243, 208, 0.46);
+      background: rgba(167, 243, 208, 0.16);
+      color: var(--mint);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 310px;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .surface,
+    .side-card {
+      background: var(--panel);
+      color: var(--panel-ink);
+    }
+
+    .surface {
+      min-height: 620px;
+      padding: clamp(20px, 3vw, 30px);
+    }
+
+    .side {
+      display: grid;
+      gap: 16px;
+    }
+
+    .side-card {
+      padding: 22px;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.1;
+      font-weight: 950;
+      letter-spacing: 0;
+    }
+
+    .muted {
+      color: #65736d;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .analysis {
+      color: #20302b;
+      font-family: ui-serif, Georgia, "Times New Roman", "Noto Serif SC", serif;
+      font-size: 18px;
+      line-height: 1.9;
+    }
+
+    .analysis::first-letter {
+      float: left;
+      margin: 8px 10px 0 0;
+      color: #0b5a42;
+      font-size: 60px;
+      line-height: 0.8;
+      font-weight: 950;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .summary-card,
+    .record,
+    .site-card,
+    .kv {
+      border: 1px solid var(--line-dark);
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.88), rgba(232, 240, 228, 0.72));
+    }
+
+    .summary-card {
+      padding: 16px;
+    }
+
+    .summary-card span,
+    .kv span,
+    .detail span {
+      display: block;
+      margin-bottom: 8px;
+      color: #65746d;
+      font-size: 10px;
+      font-weight: 950;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .summary-card strong,
+    .kv strong,
+    .detail strong {
+      display: block;
+      color: #101c19;
+      font-size: 18px;
+      line-height: 1.25;
+      font-weight: 950;
+      overflow-wrap: anywhere;
+    }
+
+    .records {
+      display: grid;
+      gap: 14px;
+    }
+
+    .record {
+      position: relative;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .record::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: linear-gradient(var(--cyan), var(--mint));
+    }
+
+    .record-button {
+      width: 100%;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 14px;
+      align-items: center;
+      padding: 18px 18px 18px 22px;
+      text-align: left;
+    }
+
+    .record-title {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 9px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 27px;
+      padding: 6px 10px;
+      border: 1px solid rgba(36, 92, 135, 0.24);
+      background: #e5f4fb;
+      color: #185577;
+      font-size: 12px;
+      font-weight: 950;
+      line-height: 1;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 27px;
+      padding: 6px 9px;
+      border: 1px solid rgba(17, 28, 26, 0.11);
+      background: rgba(255, 255, 255, 0.74);
+      color: #263b34;
+      font-size: 12px;
+      font-weight: 850;
+      line-height: 1;
+    }
+
+    .chip.good {
+      border-color: rgba(31, 138, 95, 0.22);
+      background: #def8e9;
+      color: #11583a;
+    }
+
+    .record-body {
+      display: none;
+      padding: 0 18px 18px 22px;
+    }
+
+    .record.open .record-body {
+      display: grid;
+      gap: 14px;
+    }
+
+    .kv-grid,
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .kv,
+    .detail {
+      padding: 14px;
+    }
+
+    .site-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .site-card {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 16px;
+      align-items: center;
+      padding: 18px;
+      background:
+        linear-gradient(90deg, rgba(167, 243, 208, 0.28), rgba(125, 211, 252, 0.14)),
+        rgba(255, 255, 255, 0.76);
+    }
+
+    .address {
+      margin-bottom: 12px;
+      color: #0d241d;
+      font-size: clamp(26px, 4vw, 42px);
+      line-height: 0.95;
+      font-weight: 950;
+      overflow-wrap: anywhere;
+    }
+
+    .raw-panel {
+      position: relative;
+    }
+
+    pre {
+      margin: 0;
+      padding: 18px;
+      max-height: 560px;
+      overflow: auto;
+      border: 1px solid rgba(167, 243, 208, 0.18);
+      background:
+        linear-gradient(90deg, rgba(167, 243, 208, 0.04), transparent),
+        #061012;
+      color: #eafff3;
+      font: 13px/1.62 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      tab-size: 2;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .mini-json {
+      max-height: 240px;
+    }
+
+    .empty {
+      padding: 48px 20px;
+      border: 1px dashed rgba(17, 28, 26, 0.22);
+      color: #66756e;
+      text-align: center;
+    }
+
+    .type-list {
+      display: grid;
+      gap: 9px;
+      margin-top: 12px;
+    }
+
+    .type-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 0;
+      border-top: 1px solid var(--line-dark);
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    @media (max-width: 980px) {
+      .app { width: min(100% - 24px, 780px); padding-top: 18px; }
+      .shell,
+      .layout,
+      .toolbar { grid-template-columns: 1fr; }
+      .tabs,
+      .type-filters { justify-content: flex-start; }
+      .hero { min-height: 360px; }
+      .signal-strip { display: none; }
+      .summary-grid,
+      .kv-grid,
+      .detail-grid,
+      .site-card { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="shell">
+      <header class="hero">
+        <p class="eyebrow">ID Factory Handle Viewer</p>
+        <h1 id="handleTitle"></h1>
+        <p class="hero-copy">Agent 通过 MCP 获取解析数据。这个页面把一次解析快照包装成可搜索、可过滤、可展开的本地小应用。</p>
+        <div class="signal-strip" aria-hidden="true">
+          <i style="--level:1"></i><i style="--level:3"></i><i style="--level:5"></i><i style="--level:7"></i><i style="--level:9"></i><i style="--level:6"></i><i style="--level:4"></i><i style="--level:8"></i><i style="--level:2"></i><i style="--level:5"></i>
+        </div>
+      </header>
+
+      <aside class="status">
+        <div class="status-pill" id="statusLabel"></div>
+        <div class="metric"><span>Response Code</span><strong id="responseCode"></strong></div>
+        <div class="metric"><span>Record Count</span><strong id="recordCount"></strong></div>
+        <div class="metric"><span>Generated At</span><strong id="generatedAt"></strong></div>
+      </aside>
+    </div>
+
+    <div class="toolbar">
+      <label class="search" aria-label="搜索记录">
+        <input id="searchInput" type="search" placeholder="搜索 type、index、value、IP、timestamp..." />
+      </label>
+      <nav class="tabs" aria-label="视图切换">
+        <button class="tab" data-view="overview" aria-selected="true">总览</button>
+        <button class="tab" data-view="records" aria-selected="false">记录</button>
+        <button class="tab" data-view="sites" aria-selected="false">站点</button>
+        <button class="tab" data-view="json" aria-selected="false">JSON</button>
+      </nav>
+    </div>
+
+    <div class="toolbar">
+      <div class="type-filters" id="typeFilters"></div>
+      <div class="tabs">
+        <button class="action" id="expandAll">全部展开</button>
+        <button class="action" id="collapseAll">全部收起</button>
+        <button class="action" id="copyJson">复制 JSON</button>
+      </div>
+    </div>
+
+    <div class="layout">
+      <main class="surface" id="viewRoot"></main>
+      <aside class="side">
+        <section class="side-card">
+          <div class="section-title"><h2>类型统计</h2></div>
+          <div class="type-list" id="typeStats"></div>
+        </section>
+        <section class="side-card">
+          <div class="section-title"><h2>分析摘要</h2></div>
+          <div class="analysis" id="analysisText"></div>
+        </section>
+      </aside>
+    </div>
+  </div>
+
+  <script type="application/json" id="app-data">{{appDataJson}}</script>
+  <script>
+    const appData = JSON.parse(document.getElementById("app-data").textContent);
+    const result = appData.result || {};
+    const records = Array.isArray(result.value) ? result.value : [];
+    const state = {
+      view: "overview",
+      query: "",
+      type: "ALL",
+      expanded: new Set(records.map((_, index) => index))
+    };
+
+    const $ = (selector) => document.querySelector(selector);
+    const $$ = (selector) => Array.from(document.querySelectorAll(selector));
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function stringify(value) {
+      return JSON.stringify(value ?? "", null, 2);
+    }
+
+    function recordText(record) {
+      return stringify(record).toLowerCase();
+    }
+
+    function getTypes() {
+      const counts = new Map();
+      for (const record of records) {
+        const type = record.type || "UNKNOWN";
+        counts.set(type, (counts.get(type) || 0) + 1);
+      }
+      return Array.from(counts.entries()).sort((a, b) => a[0].localeCompare(b[0]));
+    }
+
+    function getFilteredRecords() {
+      const query = state.query.trim().toLowerCase();
+      return records
+        .map((record, index) => ({ record, index }))
+        .filter(({ record }) => state.type === "ALL" || record.type === state.type)
+        .filter(({ record }) => !query || recordText(record).includes(query));
+    }
+
+    function getSites() {
+      const sites = [];
+      records.forEach((record, index) => {
+        const servers = record?.data?.value?.servers;
+        if (!Array.isArray(servers)) return;
+        servers.forEach((server) => sites.push({ record, index, server }));
+      });
+      return sites;
+    }
+
+    function chip(label, good = false) {
+      return `<span class="chip ${good ? "good" : ""}">${escapeHtml(label)}</span>`;
+    }
+
+    function kv(label, value) {
+      return `<div class="kv"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value ?? "-")}</strong></div>`;
+    }
+
+    function detail(label, value) {
+      return `<div class="detail"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value ?? "-")}</strong></div>`;
+    }
+
+    function renderServer(server) {
+      const interfaces = Array.isArray(server.interfaces) ? server.interfaces : [];
+      return `
+        <article class="site-card">
+          <div>
+            <div class="address">${escapeHtml(server.address ?? "-")}</div>
+            <div class="detail-grid">
+              ${detail("Server ID", server.serverid)}
+              ${interfaces.map((item) => [
+                detail("Endpoint", `${item.protocol ?? "-"} : ${item.port ?? "-"}`),
+                detail("Query", item.query),
+                detail("Admin", item.admin)
+              ].join("")).join("")}
+            </div>
+          </div>
+          <div class="tag">HS_SITE</div>
+        </article>
+      `;
+    }
+
+    function renderRecord(record, index) {
+      const servers = record?.data?.value?.servers;
+      const isOpen = state.expanded.has(index);
+      const value = record?.data?.value;
+      const valueText = typeof value === "object" ? JSON.stringify(value) : value;
+      const body = Array.isArray(servers) && servers.length
+        ? `<div class="site-grid">${servers.map(renderServer).join("")}</div>`
+        : `
+          <div class="kv-grid">
+            ${kv("Data Format", record?.data?.format ?? "unknown")}
+            ${kv("Record Value", valueText === "" ? "-" : valueText)}
+          </div>
+          <pre class="mini-json">${escapeHtml(stringify(record.data ?? record))}</pre>
+        `;
+
+      return `
+        <article class="record ${isOpen ? "open" : ""}" data-index="${index}">
+          <button class="record-button" data-toggle="${index}">
+            <div class="record-title">
+              <span class="tag">${escapeHtml(record.type ?? "UNKNOWN")}</span>
+              ${chip(`index ${record.index ?? "-"}`)}
+              ${chip(`TTL ${record.ttl ?? "-"}`)}
+              ${chip(record.timestamp ?? "-")}
+            </div>
+            <span class="chip">${isOpen ? "收起" : "展开"}</span>
+          </button>
+          <div class="record-body">
+            ${body}
+            <div class="type-filters">
+              ${chip(`publicRead ${record.publicRead ?? "-"}`, record.publicRead === 1)}
+              ${chip(`publicWrite ${record.publicWrite ?? "-"}`)}
+              ${chip(`adminRead ${record.adminRead ?? "-"}`)}
+              ${chip(`adminWrite ${record.adminWrite ?? "-"}`)}
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    function renderOverview() {
+      const siteCount = getSites().length;
+      const typeSummary = getTypes().map(([type, count]) => `${type} x ${count}`).join(" / ") || "无";
+      return `
+        <div class="section-title">
+          <h2>解析总览</h2>
+          <span class="muted">MCP structuredContent snapshot</span>
+        </div>
+        <div class="analysis">${escapeHtml(appData.analysis || "暂无分析摘要。")}</div>
+        <div class="summary-grid">
+          ${kv("Handle", result.handle ?? "-")}
+          ${kv("Response Code", result.responseCode ?? "-")}
+          ${kv("Record Count", records.length)}
+          ${kv("Record Types", typeSummary)}
+          ${kv("Site Servers", siteCount)}
+          ${kv("Generated At", appData.generatedAt ?? "-")}
+        </div>
+      `;
+    }
+
+    function renderRecords() {
+      const filtered = getFilteredRecords();
+      return `
+        <div class="section-title">
+          <h2>解析记录</h2>
+          <span class="muted">${filtered.length} / ${records.length} 条</span>
+        </div>
+        <div class="records">
+          ${filtered.length ? filtered.map(({ record, index }) => renderRecord(record, index)).join("") : '<div class="empty">没有匹配的记录。</div>'}
+        </div>
+      `;
+    }
+
+    function renderSites() {
+      const sites = getSites();
+      return `
+        <div class="section-title">
+          <h2>站点信息</h2>
+          <span class="muted">${sites.length} 个 server</span>
+        </div>
+        <div class="site-grid">
+          ${sites.length ? sites.map(({ server }) => renderServer(server)).join("") : '<div class="empty">当前解析结果没有 HS_SITE server 信息。</div>'}
+        </div>
+      `;
+    }
+
+    function renderJson() {
+      return `
+        <div class="section-title">
+          <h2>原始 JSON</h2>
+          <button class="action" data-copy-json>复制 JSON</button>
+        </div>
+        <div class="raw-panel"><pre>${escapeHtml(stringify(result))}</pre></div>
+      `;
+    }
+
+    function renderTypeControls() {
+      const types = getTypes();
+      $("#typeFilters").innerHTML = [
+        `<button class="filter ${state.type === "ALL" ? "active" : ""}" data-type="ALL">全部</button>`,
+        ...types.map(([type, count]) => `<button class="filter ${state.type === type ? "active" : ""}" data-type="${escapeHtml(type)}">${escapeHtml(type)} ${count}</button>`)
+      ].join("");
+
+      $("#typeStats").innerHTML = types.length
+        ? types.map(([type, count]) => `<div class="type-row"><span>${escapeHtml(type)}</span><strong>${count}</strong></div>`).join("")
+        : '<div class="muted">暂无记录类型。</div>';
+    }
+
+    function render() {
+      $("#handleTitle").textContent = result.handle || "unknown";
+      $("#statusLabel").textContent = result.responseCode === 1 ? "解析成功" : "需要检查";
+      $("#responseCode").textContent = result.responseCode ?? "-";
+      $("#recordCount").textContent = records.length;
+      $("#generatedAt").textContent = appData.generatedAt || "-";
+      $("#analysisText").textContent = appData.analysis || "暂无分析摘要。";
+      renderTypeControls();
+
+      const root = $("#viewRoot");
+      if (state.view === "overview") root.innerHTML = renderOverview();
+      if (state.view === "records") root.innerHTML = renderRecords();
+      if (state.view === "sites") root.innerHTML = renderSites();
+      if (state.view === "json") root.innerHTML = renderJson();
+
+      $$(".tab").forEach((button) => {
+        button.setAttribute("aria-selected", String(button.dataset.view === state.view));
+      });
+    }
+
+    async function copyJson() {
+      const text = stringify(result);
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch {
+        const area = document.createElement("textarea");
+        area.value = text;
+        document.body.appendChild(area);
+        area.select();
+        document.execCommand("copy");
+        area.remove();
+      }
+    }
+
+    document.addEventListener("click", (event) => {
+      const tab = event.target.closest("[data-view]");
+      if (tab) {
+        state.view = tab.dataset.view;
+        render();
+        return;
+      }
+
+      const filter = event.target.closest("[data-type]");
+      if (filter) {
+        state.type = filter.dataset.type;
+        state.view = "records";
+        render();
+        return;
+      }
+
+      const toggle = event.target.closest("[data-toggle]");
+      if (toggle) {
+        const index = Number(toggle.dataset.toggle);
+        if (state.expanded.has(index)) state.expanded.delete(index);
+        else state.expanded.add(index);
+        render();
+        return;
+      }
+
+      if (event.target.closest("#expandAll")) {
+        records.forEach((_, index) => state.expanded.add(index));
+        state.view = "records";
+        render();
+        return;
+      }
+
+      if (event.target.closest("#collapseAll")) {
+        state.expanded.clear();
+        state.view = "records";
+        render();
+        return;
+      }
+
+      if (event.target.closest("#copyJson") || event.target.closest("[data-copy-json]")) {
+        copyJson();
+      }
+    });
+
+    $("#searchInput").addEventListener("input", (event) => {
+      state.query = event.target.value;
+      state.view = "records";
+      render();
+    });
+
+    render();
+  </script>
+</body>
+</html>

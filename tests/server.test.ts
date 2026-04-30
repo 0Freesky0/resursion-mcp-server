@@ -48,4 +48,39 @@ describe("MCP server", () => {
       await server.close();
     }
   });
+
+  it("returns actionable resolver diagnostics when the tool fails", async () => {
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = vi.fn().mockRejectedValue(new TypeError("fetch failed", {
+      cause: new Error("other side closed")
+    })) as typeof fetch;
+
+    const server = createServer();
+    const client = new Client({ name: "test-client", version: "0.1.0" });
+    const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
+
+    try {
+      await Promise.all([server.connect(serverTransport), client.connect(clientTransport)]);
+
+      const result = await client.callTool({
+        name: "resolve_handle",
+        arguments: { handle: "88.333.017101/Carbon_2024" }
+      });
+
+      expect(result.isError).toBe(true);
+      expect(result.content).toEqual([
+        expect.objectContaining({
+          type: "text",
+          text: expect.stringContaining(
+            "Resolver request failed for handle 88.333.017101/Carbon_2024"
+          )
+        })
+      ]);
+      expect(JSON.stringify(result.content)).toContain("other side closed");
+    } finally {
+      globalThis.fetch = originalFetch;
+      await client.close();
+      await server.close();
+    }
+  });
 });
