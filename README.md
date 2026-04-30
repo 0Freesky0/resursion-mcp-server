@@ -2,6 +2,8 @@
 
 这是一个本地 stdio MCP server，用于通过下面的接口解析 ID Factory handle 记录：
 
+GitHub 仓库：[https://github.com/0Freesky0/resursion-mcp-server](https://github.com/0Freesky0/resursion-mcp-server)
+
 ```text
 http://bj.resolve.idfactory.cn:8081/{handle}
 ```
@@ -84,7 +86,7 @@ node dist/index.js
 如果代码已经发布到 GitHub，可以直接使用 GitHub 仓库作为 npx 包来源：
 
 ```bash
-npx -y github:<OWNER>/resursion-mcp-server
+npx -y github:0Freesky0/resursion-mcp-server
 ```
 
 对应的 MCP 客户端配置可以写成：
@@ -96,7 +98,7 @@ npx -y github:<OWNER>/resursion-mcp-server
       "command": "npx",
       "args": [
         "-y",
-        "github:<OWNER>/resursion-mcp-server"
+        "github:0Freesky0/resursion-mcp-server"
       ]
     }
   }
