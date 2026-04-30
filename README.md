@@ -81,6 +81,20 @@ node dist/index.js
 
 日常使用建议优先配置构建后的 `dist/index.js`。
 
+## Codex 安装
+
+在 Codex 中添加这个 MCP server：
+
+```bash
+codex mcp add resursion-mcp-server -- npx -y github:0Freesky0/resursion-mcp-server
+```
+
+查看是否添加成功：
+
+```bash
+codex mcp list
+```
+
 ## 通过 npx 使用
 
 如果代码已经发布到 GitHub，可以直接使用 GitHub 仓库作为 npx 包来源：
